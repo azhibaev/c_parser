@@ -1,0 +1,7 @@
+b main
+b cmp_run
+tty /dev/pts/2
+run
+layout src
+set tui tab-width 2
+

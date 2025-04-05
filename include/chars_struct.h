@@ -1,0 +1,13 @@
+VAR_POINTER(char,buf)
+VAR(size_t,size)
+VAR(size_t,rpos)
+VAR(size_t,wpos)
+VAR(size_t,gpos)
+VAR(size_t,fpos)
+VAR(float,factor)
+FLAGS(
+FLAG(init)
+FLAG(alloc)
+FLAG(prefix)
+FLAG(suffix)
+)
