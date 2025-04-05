@@ -1,6 +1,6 @@
 # Please set dir for temp header files
-HEADERS_DIR=include
-#HEADERS_DIR=${HOME}/download/include
+#HEADERS_DIR=include
+HEADERS_DIR=${HOME}/download/include
 
 INCLUDE=-I. -Icommon -Imodule -Ifile -Iparse -Iutopia -I$(HEADERS_DIR) -Iprime -Ichars
 #PKGCFLAGS=`pkg-config --cflags freetype2`

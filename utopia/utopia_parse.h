@@ -69,16 +69,16 @@ FUNCTION_INLINE int FUNC(find_array)(chars *s,
 
 	if (chars_check(s))
 	{
-		s_size = s->wpos - s->rpos;
+		s_size = s->wpos - s->gpos;
 		for (i = 0; i < a_size; i++)
 		{
 			if (s_size >= a[i].size)
 			{
-				if (!strncmp(s->buf + s->rpos,
+				if (!strncmp(s->buf + s->gpos,
 							a[i].s,
 							a[i].size))
 				{
-					s->rpos += a[i].size;
+					s->gpos += a[i].size;
 					is_set = 1;
 					break;
 				}
@@ -248,7 +248,6 @@ FUNCTION_INLINE int FUNC(run)(T *p)
 					p->s_in,
 					FILE_FLAG_WRITE_LINE))
 		{
-			pos = chars_get_mark(p->s_in);
 			is_set = FUNC(section)(p,
 					p->s_in);
 			if (is_set)
@@ -273,7 +272,6 @@ FUNCTION_INLINE int FUNC(run)(T *p)
 			}
 			else
 			{
-				chars_set_mark(p->s_in, pos);
 				FUNC(write_out)(p);
 				chars_reset(p->s_in);
 			}
