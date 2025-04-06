@@ -22,6 +22,7 @@ FUNCTION_INLINE char* FUNC(write_pchar)(T *p,
 		size_t s_size,
 		unsigned int flags);
 FUNCTION_INLINE size_t FUNC(find_crlf)(T *p);
+FUNCTION_INLINE unsigned int FUNC(get_size)(T *s);
 
 /*
 Checks that the pointer p has been created,
@@ -423,6 +424,37 @@ FUNCTION_INLINE int FUNC(copy_from_pos)(T *p,
 				{
 					is_set++;
 				}
+			}
+		}
+	}
+
+	return is_set;
+}
+
+/*
+Copy from read position to get position
+in case of parse
+Hello, World !
+^    ^        ^
+|    |        |
+rpos gpos     wpos
+*/
+FUNCTION_INLINE int FUNC(read_chars_get)(T *p,
+		chars *s,
+		unsigned int flags)
+{
+	int is_set = 0;
+	size_t size = 0;
+
+	if (p)
+	{
+		if (FUNC(check)(s))
+		{
+			size = FUNC(get_size)(s);
+			if (FUNC(read_pchar)(p, s->buf + s->rpos, size, flags))
+			{
+				s->rpos += size;
+				is_set++;
 			}
 		}
 	}

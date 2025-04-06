@@ -11,14 +11,21 @@
 #module integer_constant
 
 #struct
-chars *v;
+init chars *v;
 dec;
 octal;
 hex;
 long;
 unsigned;
 
-#init ()
+#init (const char *s)
+chars_read_pchar(p->v,
+		s,
+		0,
+		0);
+
+#free
+p->flags = 0;
 
 #include "mod.h"
 

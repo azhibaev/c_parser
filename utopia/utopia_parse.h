@@ -240,7 +240,6 @@ DONE: basename is added
 FUNCTION_INLINE int FUNC(run)(T *p)
 {
 	int is_set = 0;
-	size_t pos = 0;
 
 	if (p)
 	{

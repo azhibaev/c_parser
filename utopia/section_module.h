@@ -16,7 +16,6 @@
 FUNCTION_INLINE int FUNC(section_module)(T *p)
 {
 	int is_set = 0;
-	size_t size = 0;
 
 	if (p)
 	{
@@ -31,13 +30,10 @@ FUNCTION_INLINE int FUNC(section_module)(T *p)
 				chars_flush_read_pos(p->s_in);
 				if (parse_identifier(p->s_in))
 				{
-					size = chars_get_size(p->s_in);
-					if (size)
-					{
-						chars_copy(p->s_module,
+					if (chars_read_chars_get(p->s_module,
 								p->s_in,
-								size,
-								0);
+								0))
+					{
 						p->is_module = 1;
 						chars_reset(p->s_in);
 						chars_read_pchar(p->s_in,

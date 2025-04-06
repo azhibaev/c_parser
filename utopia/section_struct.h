@@ -19,6 +19,7 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 {
 	int is_set = 0;
 	size_t pos = 0;
+	size_t size = 0;
 	int is_create = 0;
 	int is_init = 0;
 	int is_free = 0;
@@ -43,16 +44,18 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 					if (parse_lws(p->s_in))
 					{
 					}
+					chars_flush_read_pos(p->s_in);
 					pos = chars_get_mark(p->s_in);
 					// "free" ? ->
 					if (parse_identifier(p->s_in))
 					{
+						size = chars_get_size(p->s_in);
 						if (!strncmp(p->s_in->buf + pos,
 									"create",
-									p->s_in->rpos - pos))
+									size))
 						{
-							if (chars_char_read(p->s_in) == ';' ||
-									p->s_in->rpos + 1 >= p->f_in->s->wpos)
+							if (chars_char_get(p->s_in) == ';' ||
+									p->s_in->gpos + 1 >= p->f_in->s->wpos)
 							{
 								is_var_type = 1;
 							}
@@ -62,6 +65,7 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 								if (parse_lws(p->s_in))
 								{
 								}
+								chars_flush_read_pos(p->s_in);
 								pos = chars_get_mark(p->s_in);
 								if (parse_identifier(p->s_in))
 								{
@@ -71,10 +75,10 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 						}
 						else if (!strncmp(p->s_in->buf + pos,
 									"init",
-									p->s_in->rpos - pos))
+									size))
 						{
-							if (chars_char_read(p->s_in) == ';' ||
-									p->s_in->rpos + 1 >= p->f_in->s->wpos)
+							if (chars_char_get(p->s_in) == ';' ||
+									p->s_in->gpos + 1 >= p->f_in->s->wpos)
 							{
 								is_var_type = 1;
 							}
@@ -84,6 +88,7 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 								if (parse_lws(p->s_in))
 								{
 								}
+								chars_flush_read_pos(p->s_in);
 								pos = chars_get_mark(p->s_in);
 								if (parse_identifier(p->s_in))
 								{
@@ -93,10 +98,10 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 						}
 						else if (!strncmp(p->s_in->buf + pos,
 									"free",
-									p->s_in->rpos - pos))
+									size))
 						{
-							if (chars_char_read(p->s_in) == ';' ||
-									p->s_in->rpos + 1 >= p->f_in->s->wpos)
+							if (chars_char_get(p->s_in) == ';' ||
+									p->s_in->gpos + 1 >= p->f_in->s->wpos)
 							{
 								is_var_type = 1;
 							}
@@ -106,6 +111,7 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 								if (parse_lws(p->s_in))
 								{
 								}
+								chars_flush_read_pos(p->s_in);
 								pos = chars_get_mark(p->s_in);
 								if (parse_identifier(p->s_in))
 								{
@@ -122,20 +128,21 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 					{
 						// var type
 						chars_reset(p->s_var_type);
-						chars_read_pchar(p->s_var_type,
-								p->s_in->buf + pos,
-								p->s_in->rpos - pos,
+						chars_read_chars_get(p->s_var_type,
+								p->s_in,
 								0);
 						is_var_type = 0;
 						if (parse_lws(p->s_in))
 						{
 						}
+						chars_flush_read_pos(p->s_in);
 						pos = chars_get_mark(p->s_in);
 						pos_var = pos;
 						pos_var_type = pos_var;
 						while (parse_identifier(p->s_in))
 						{
 							pos_var_type = pos_var;
+							chars_flush_read_pos(p->s_in);
 							pos_var = chars_get_mark(p->s_in);
 							if (is_pointer)
 							{
@@ -169,7 +176,9 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 						}
 						else
 						{
-							chars_set_mark(p->s_in, pos);
+							chars_set_mark(p->s_in,
+									pos);
+							chars_set_get_pos(p->s_in);
 						}
 						if (parse_asterisk(p->s_in))
 						{
@@ -178,15 +187,14 @@ FUNCTION_INLINE int FUNC(section_struct)(T *p)
 						if (parse_lws(p->s_in))
 						{
 						}
+						chars_flush_read_pos(p->s_in);
 						pos = chars_get_mark(p->s_in);
 						if (parse_identifier(p->s_in))
 						{
-							pos_var = chars_get_mark(p->s_in);
 							// var
 							chars_reset(p->s_var);
-							chars_read_pchar(p->s_var,
-									p->s_in->buf + pos,
-									p->s_in->rpos - pos,
+							chars_read_chars_get(p->s_var,
+									p->s_in,
 									0);
 							chars_read_pchar(p->s_struct,
 									"VAR",

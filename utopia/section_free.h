@@ -37,22 +37,24 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 			if (parse_char(p->s_in,
 						'('))
 			{
+				chars_flush_read_pos(p->s_in);
 				pos = chars_get_mark(p->s_in);
 				while (parse_identifier(p->s_in))
 				{
 					chars_reset(p->s_var_type);
-					chars_read_pchar(p->s_var_type,
-							p->s_in->buf + pos,
-							p->s_in->rpos - pos,
+					chars_read_chars_get(p->s_var_type,
+							p->s_in,
 							0);
 					if (parse_lws(p->s_in))
 					{
+						chars_flush_read_pos(p->s_in);
 					}
 					pos = chars_get_mark(p->s_in);
 					pos_var = pos;
 					pos_var_type = pos_var;
 					while (parse_identifier(p->s_in))
 					{
+						chars_flush_read_pos(p->s_in);
 						pos_var_type = pos_var;
 						pos_var = chars_get_mark(p->s_in);
 						if (is_pointer)
@@ -80,14 +82,18 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 								p->s_in->buf + pos,
 								pos_var_type - pos,
 								0);
-						p->s_in->rpos = pos_var_type;
+						chars_set_mark(p->s_in,
+								pos_var_type);
+						chars_set_get_pos(p->s_in);
 						if (parse_lws(p->s_in))
 						{
 						}
 					}
 					else
 					{
-						p->s_in->rpos = pos;
+						chars_set_mark(p->s_in,
+								pos);
+						chars_set_get_pos(p->s_in);
 					}
 					if (parse_asterisk(p->s_in))
 					{
@@ -96,13 +102,13 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 					if (parse_lws(p->s_in))
 					{
 					}
+					chars_flush_read_pos(p->s_in);
 					pos = chars_get_mark(p->s_in);
 					if (parse_identifier(p->s_in))
 					{
 						chars_reset(p->s_var);
-						chars_read_pchar(p->s_var,
-								p->s_in->buf + pos,
-								p->s_in->rpos - pos,
+						chars_read_chars_get(p->s_var,
+								p->s_in,
 								0);
 						chars_read_pchar(p->s_free_var,
 								"PARAMETER",
@@ -153,6 +159,7 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 					if (parse_lws(p->s_in))
 					{
 					}
+					chars_flush_read_pos(p->s_in);
 					pos = chars_get_mark(p->s_in);
 				}
 			}
@@ -171,9 +178,8 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 						{
 							// var type
 							chars_reset(p->s_var_type);
-							chars_read_pchar(p->s_var_type,
-									p->s_in->buf + pos,
-									p->s_in->rpos - pos,
+							chars_read_chars_get(p->s_var_type,
+									p->s_in,
 									0);
 							if (parse_lws(p->s_in))
 							{
@@ -185,6 +191,7 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 							if (parse_lws(p->s_in))
 							{
 							}
+							chars_flush_read_pos(p->s_in);
 							pos = chars_get_mark(p->s_in);
 							if (parse_identifier(p->s_in))
 							{
@@ -199,11 +206,10 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 									{
 										if (p->s_in->buf[p->f_in->s->wpos - 1] == ';')
 										{
-											p->s_in->rpos = p->f_in->s->wpos - 1;
+											p->s_in->gpos = p->f_in->s->wpos - 1;
 											chars_reset(p->s_var);
-											chars_read_pchar(p->s_var,
-													p->s_in->buf + pos,
-													p->s_in->rpos - pos,
+											chars_read_chars_get(p->s_var,
+													p->s_in,
 													0);
 											is_var++;
 											chars_read_pchar(p->s_free_var,
@@ -247,7 +253,9 @@ FUNCTION_INLINE int FUNC(section_free)(T *p)
 					}
 					if (!is_var)	
 					{
-						p->s_in->rpos = 0;
+						chars_set_mark(p->s_in,
+								0);
+						chars_set_get_pos(p->s_in);
 						/*
 						if (p->s_in->buf[p->f_in->s->wpos] == '\n')
 						{
